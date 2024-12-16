@@ -1,0 +1,313 @@
+# TPMS Sensors with device name "BR" and MAC address "AC:15:85:xx:xx:xx" or "3B:60:00:xx:xx:xx"
+# Originaly supported with SYTPMS Android app
+# kresimir.petrovic@gmail.com
+# 
+# https://vi.aliexpress.com/item/1005007979996710.html or search "SYTPMS bluetooth TPMS"
+# App with the turquoise window elements
+#
+# Originaly tested on ESP32-C3
+# https://vi.aliexpress.com/item/1005006753245627.html
+# C3 Mini V2.1.0 - LOLIN WIFI Bluetooth LE BLE IOT Board ESP32-C3FH4 ESP32-C3 4MB FLASH MicroPython Arduino Compatible
+# For any other board change board type under eps32 config
+
+esphome:
+  name: esp32-c3-01
+  friendly_name: ESP32-C3-01
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  level: DEBUG
+# For detailed debug uncomment lines below and change level: to VERY_VERBOSE
+#  logs:
+#    jbd_bms_ble: VERY_VERBOSE
+#    ble_client: VERY_VERBOSE
+#    esp32_ble: VERY_VERBOSE
+#    esp32_ble_tracker: VERY_VERBOSE
+#    scheduler: DEBUG
+#    component: DEBUG
+#    sensor: DEBUG
+#    api: DEBUG
+#    api.service: DEBUG
+
+# Enable Home Assistant API
+api:
+#  encryption:
+#    key: "EOAzlOt3jRkTMLVCVPcrhEnM3ksLe4DRpm+DSC6qbYc="
+
+ota:
+  - platform: esphome
+    password: "5860f65dbf27df0a4f208d3e51b1a2a7"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "esp32-c3-01"
+    password: "ZI69UdFneN6s"
+
+captive_portal:
+
+web_server:
+  port: 80 
+
+# Data values supported on the TPMS sensor: Temperature, Absolute Pressure and Battery Voltage
+sensor:
+  # Front wheel
+  - platform: template
+    name: "FW Temperature"
+    id: ble_fw_temp
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+    device_class: "temperature"
+    state_class: "measurement"
+  - platform: template
+    name: "FW Pressure"
+    id: ble_fw_press
+    unit_of_measurement: "psi"
+    icon: "mdi:gauge"
+    device_class: "pressure"
+    state_class: "measurement"
+  - platform: template
+    name: "FW Voltage"
+    id: ble_fw_batt
+    unit_of_measurement: "V"
+    icon: "mdi:battery"
+    device_class: "voltage"
+    state_class: "measurement"
+  # Rear wheel
+  - platform: template
+    name: "RW Temperature"
+    id: ble_rw_temp
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+    device_class: "temperature"
+    state_class: "measurement"
+  - platform: template
+    name: "RW Pressure"
+    id: ble_rw_press
+    unit_of_measurement: "psi"
+    icon: "mdi:gauge"
+    device_class: "pressure"
+    state_class: "measurement"
+  - platform: template
+    name: "RW Voltage"
+    id: ble_rw_batt
+    unit_of_measurement: "V"
+    icon: "mdi:battery"
+    device_class: "voltage"
+    state_class: "measurement"
+
+# Binary sensors implemented as a bits in a integer number (7 known and 1 unknown)
+binary_sensor:
+  # Front wheel
+  - platform: template
+    name: "FW Zero Pressure"
+    id: ble_fw_zp
+    device_class: "problem"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "FW Rotating"
+    id: ble_fw_rot
+    device_class: "moving"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI    
+  - platform: template
+    name: "FW Standing Still"
+    id: ble_fw_still15
+    device_class: "motion"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "FW Begin Rotating"
+    id: ble_fw_begrot
+    device_class: "motion"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "FW Low PSI < 20.7"
+    id: ble_fw_lowpsi
+    device_class: "safety"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "FW High PSI > 20.7"
+    id: ble_fw_highpsi
+    device_class: "safety"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "FW Rising Pressure"
+    id: ble_fw_risepsi
+    device_class: "safety"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "FW Unknown"
+    id: ble_fw_mistery
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+  # Rear wheel
+    name: "RW Zero Pressure"
+    id: ble_rw_zp
+    device_class: "problem"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW Rotating"
+    id: ble_rw_rot
+    device_class: "moving"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW Standing Still"
+    id: ble_rw_still15
+    device_class: "motion"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW Begin Rotating"
+    id: ble_rw_begrot
+    device_class: "motion"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW Low PSI < 20.7"
+    id: ble_rw_lowpsi
+    device_class: "safety"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW High PSI > 20.7"
+    id: ble_rw_highpsi
+    device_class: "safety"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW Rising Pressure"
+    id: ble_rw_risepsi
+    device_class: "safety"
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+  - platform: template
+    name: "RW Unknown"
+    id: ble_rw_mistery
+    disabled_by_default: true # Change to false or add each sensors manually from the HA GUI
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: false
+
+  on_ble_advertise:
+    # Front wheel
+    - mac_address: !secret fw_mac 
+      then:
+        - lambda: |-
+            ESP_LOGD("BLE_TPMS", "New TPMS device");
+            ESP_LOGD("BLE_TPMS", "  address: %s", x.address_str().c_str());
+            ESP_LOGD("BLE_TPMS", "  name: %s", x.get_name().c_str());
+            ESP_LOGD("BLE_TPMS", "  Advertised service UUIDs:");
+            for (auto uuid : x.get_service_uuids()) {
+                ESP_LOGD("BLE_TPMS", "    - %s", uuid.to_string().c_str());
+            }
+            ESP_LOGD("BLE_TPMS", "  Advertised service data:");
+            for (auto data : x.get_service_datas()) {
+                ESP_LOGD("BLE_TPMS", "    - %s: (length %i)", data.uuid.to_string().c_str(), data.data.size());
+            }
+            ESP_LOGD("BLE_TPMS", "  Advertised manufacturer data:");
+            for (auto data : x.get_manufacturer_datas()) {
+                ESP_LOGD("BLE_TPMS", "    - %s: (length %i)", data.uuid.to_string().c_str(), data.data.size());
+            }
+            const char *bit_rep[16] = {
+              [ 0] = "0000", [ 1] = "0001", [ 2] = "0010", [ 3] = "0011",
+              [ 4] = "0100", [ 5] = "0101", [ 6] = "0110", [ 7] = "0111",
+              [ 8] = "1000", [ 9] = "1001", [10] = "1010", [11] = "1011",
+              [12] = "1100", [13] = "1101", [14] = "1110", [15] = "1111",
+            };
+            for (auto data : x.get_manufacturer_datas()) {
+              ESP_LOGD("BLE_TPMS", "FW Manufacturer ID: %s battery:status", data.uuid.to_string().c_str());
+              ESP_LOGD("BLE_TPMS", "FW Manufacturer Data: %X:%X:%X:%X:%X temp:press1:press2:checksum1:checksum2", data.data[0], data.data[1], data.data[2], data.data[3], data.data[4]);
+              ESP_LOGD("BLE_TPMS", "FW Manufacturer Data length: %d", data.data.size());
+
+              const char *volt_hex = data.uuid.to_string().substr(2,2).c_str();
+              const float voltage = (float) strtol(volt_hex, NULL, 16) * 0.1;
+              const char *status_hex = data.uuid.to_string().substr(4,2).c_str();
+              const int status = (int) strtol(status_hex, NULL, 16);
+
+              char temp_hex[3]; sprintf(temp_hex, "%x", data.data[0]);
+              char press_hex[5]; sprintf(press_hex, "%02x%02x", data.data[1], data.data[2]);
+              char checksum_hex[5]; sprintf(checksum_hex, "%02x%02x", data.data[3], data.data[4]);
+              char status_bin[9]; sprintf(status_bin, "%s%s", bit_rep[status >> 4], bit_rep[status & 0x0F]);
+              const int pressure = data.data[1] << 8 | data.data[2];
+
+              ESP_LOGD("BLE_TPMS", "FW Temperature: %d°C 0x%s", data.data[0], temp_hex);
+              ESP_LOGD("BLE_TPMS", "FW Pressure: absolute: %.1fpsi relative: %.1fpsi 0x%s", pressure * 0.1, (pressure -145) * 0.1, press_hex);
+              ESP_LOGD("BLE_TPMS", "FW Battery: %0.1fV 0x%s", voltage, data.uuid.to_string().substr(2,2).c_str());
+              ESP_LOGD("BLE_TPMS", "FW Status Byte: %s 0x%s", status_bin, data.uuid.to_string().substr(4,2).c_str());
+              if (status_bin[7] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[0]: Unknow bit 0 set"); id(ble_fw_mistery).publish_state(true); } else { id(ble_fw_mistery).publish_state(false); }
+              if (status_bin[6] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[1]: Pressure abow 20.7 psi"); id(ble_fw_highpsi).publish_state(true); } else {id(ble_fw_highpsi).publish_state(false); }
+              if (status_bin[5] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[2]: Rising pressure");  id(ble_fw_risepsi).publish_state(true); } else {id(ble_fw_risepsi).publish_state(false); }
+              if (status_bin[4] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[3]: Pressure below 20.7 psi"); id(ble_fw_lowpsi).publish_state(true); } else {id(ble_fw_lowpsi).publish_state(false); }
+              if (status_bin[3] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[4]: Begin rotation"); id(ble_fw_begrot).publish_state(true); } else {id(ble_fw_begrot).publish_state(false); }
+              if (status_bin[2] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[5]: Sensor is still for 15min"); id(ble_fw_still15).publish_state(true); } else {id(ble_fw_still15).publish_state(false); }
+              if (status_bin[1] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[6]: Sensor is rotating"); id(ble_fw_rot).publish_state(true); } else {id(ble_fw_rot).publish_state(false); }
+              if (status_bin[0] == '1') { ESP_LOGD("BLE_TPMS", "FW Status[7]: Zero pressure!"); id(ble_fw_zp).publish_state(true); } else {id(ble_fw_zp).publish_state(false); }
+              ESP_LOGD("BLE_TPMS", "FW Cheksum: 0x%s", checksum_hex);
+
+              id(ble_fw_temp).publish_state(data.data[0]);
+              id(ble_fw_press).publish_state((float) (pressure -145) * 0.1);
+              id(ble_fw_batt).publish_state(voltage);
+            }
+
+    # Rear wheel
+    - mac_address: !secret rw_mac 
+      then:
+        - lambda: |-
+            ESP_LOGD("BLE_TPMS", "New TPMS device");
+            ESP_LOGD("BLE_TPMS", "  address: %s", x.address_str().c_str());
+            ESP_LOGD("BLE_TPMS", "  name: %s", x.get_name().c_str());
+            ESP_LOGD("BLE_TPMS", "  Advertised service UUIDs:");
+            for (auto uuid : x.get_service_uuids()) {
+                ESP_LOGD("BLE_TPMS", "    - %s", uuid.to_string().c_str());
+            }
+            ESP_LOGD("BLE_TPMS", "  Advertised service data:");
+            for (auto data : x.get_service_datas()) {
+                ESP_LOGD("BLE_TPMS", "    - %s: (length %i)", data.uuid.to_string().c_str(), data.data.size());
+            }
+            ESP_LOGD("BLE_TPMS", "  Advertised manufacturer data:");
+            for (auto data : x.get_manufacturer_datas()) {
+                ESP_LOGD("BLE_TPMS", "    - %s: (length %i)", data.uuid.to_string().c_str(), data.data.size());
+            }
+            const char *bit_rep[16] = {
+            [ 0] = "0000", [ 1] = "0001", [ 2] = "0010", [ 3] = "0011",
+            [ 4] = "0100", [ 5] = "0101", [ 6] = "0110", [ 7] = "0111",
+            [ 8] = "1000", [ 9] = "1001", [10] = "1010", [11] = "1011",
+            [12] = "1100", [13] = "1101", [14] = "1110", [15] = "1111",
+            };
+            for (auto data : x.get_manufacturer_datas()) {
+              ESP_LOGD("BLE_TPMS", "RW Manufacturer ID: %s battery:status", data.uuid.to_string().c_str());
+              ESP_LOGD("BLE_TPMS", "RW Manufacturer Data: %X:%X:%X:%X:%X temp:press1:press2:checksum1:checksum2", data.data[0], data.data[1], data.data[2], data.data[3], data.data[4]);
+              ESP_LOGD("BLE_TPMS", "RW Manufacturer Data length: %d", data.data.size());
+
+              const char *volt_hex = data.uuid.to_string().substr(2,2).c_str();
+              const float voltage = (float) strtol(volt_hex, NULL, 16) * 0.1;
+              const char *status_hex = data.uuid.to_string().substr(4,2).c_str();
+              const int status = (int) strtol(status_hex, NULL, 16);
+
+              char temp_hex[3]; sprintf(temp_hex, "%x", data.data[0]);
+              char press_hex[5]; sprintf(press_hex, "%02x%02x", data.data[1], data.data[2]);
+              char checksum_hex[5]; sprintf(checksum_hex, "%02x%02x", data.data[3], data.data[4]);
+              char status_bin[9]; sprintf(status_bin, "%s%s", bit_rep[status >> 4], bit_rep[status & 0x0F]);
+              const int pressure = data.data[1] << 8 | data.data[2];
+
+              ESP_LOGD("BLE_TPMS", "RW Temperature: %d°C 0x%s", data.data[0], temp_hex);
+              ESP_LOGD("BLE_TPMS", "RW Pressure: absolute: %.1fpsi relative: %.1fpsi 0x%s", pressure * 0.1, (pressure -145) *0.1, press_hex);
+              ESP_LOGD("BLE_TPMS", "RW Battery: %0.1fV 0x%s", voltage, data.uuid.to_string().substr(2,2).c_str());
+              ESP_LOGD("BLE_TPMS", "RW Status Byte: %s 0x%s", status_bin, data.uuid.to_string().substr(4,2).c_str());
+              if (status_bin[7] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[0]: Unknow bit 0 set"); id(ble_rw_mistery).publish_state(true); } else { id(ble_rw_mistery).publish_state(false); }
+              if (status_bin[6] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[1]: Pressure abow 20.7 psi"); id(ble_rw_highpsi).publish_state(true); } else {id(ble_rw_highpsi).publish_state(false); }
+              if (status_bin[5] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[2]: Rising pressure");  id(ble_rw_risepsi).publish_state(true); } else {id(ble_rw_risepsi).publish_state(false); }
+              if (status_bin[4] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[3]: Pressure below 20.7 psi"); id(ble_rw_lowpsi).publish_state(true); } else {id(ble_rw_lowpsi).publish_state(false); }
+              if (status_bin[3] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[4]: Begin rotation"); id(ble_rw_begrot).publish_state(true); } else {id(ble_rw_begrot).publish_state(false); }
+              if (status_bin[2] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[5]: Sensor is still for 15min"); id(ble_rw_still15).publish_state(true); } else {id(ble_rw_still15).publish_state(false); }
+              if (status_bin[1] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[6]: Sensor is rotating"); id(ble_rw_rot).publish_state(true); } else {id(ble_rw_rot).publish_state(false); }
+              if (status_bin[0] == '1') { ESP_LOGD("BLE_TPMS", "RW Status[7]: Zero pressure!"); id(ble_rw_zp).publish_state(true); } else {id(ble_rw_zp).publish_state(false); }
+              ESP_LOGD("BLE_TPMS", "RW Cheksum: 0x%s", checksum_hex);
+
+              id(ble_rw_temp).publish_state(data.data[0]);
+              id(ble_rw_press).publish_state((float) (pressure -145) * 0.1);
+              id(ble_rw_batt).publish_state(voltage);
+            }
