@@ -41,4 +41,29 @@ Configure the ESPHome:
  - Abort the installation and click "Edit" on the sensor page. Paste the content of the esp32-C3-01-2WD.yaml file.
  - Click on the three dots, and choose Install
 
- 
+![ESPHome Sensor](images/ha.jpg)
+
+## TPMS Sensors 
+- BLE scanner will detect sensors with a "BR" name.
+- Sensors have MAC addresses from two ranges:
+  - AC:15:85:00:00:00
+  - 3B:60:00:00:23:33
+- Sensor will advertise service "0x27a5" which is "pressure (pound-force per square inch)", check https://www.bluetooth.com/wp-content/uploads/Files/Specification/Assigned_Numbers.html
+-   - ![TPMS Info](images/TPMS1.jpeg)
+- Values are encoded in the Manufacturer Data
+  - Manufacturer ID will contain battery voltage and status byte
+  - The rest of the Manufacturer Data will contain temperature and absolute pressure
+  - Be aware, sensors report abosolute pressure, you must convert it to the relative presure 
+
+Once pressurized they transmit when pressure changes and any couple of minutes. Rotation of a the wheel will trigger more frequent transmissions.
+
+Example:
+ - RAW DATA: 0x0303A5270308425208FF281E1401558536
+   - 0x27A5 Service UUID: pressure (pound-force per square inch)
+   - 0x4252 Name: BR
+   - 0x1E28 Manufacturer ID: 0x1E Battery voltage (3.0V), 0x28 Status byte (0b00101000)
+   - 0x14 Temperature: 20C
+   - 0x0155 Abosulute presure: 34.1 psi. relative pressure: 19.6psi (34.1-14.5)
+   - 0x5836 checksum
+   
+![TPMS Log](images/TPMS2.jpeg)
