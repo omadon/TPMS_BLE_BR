@@ -63,7 +63,7 @@ Example:
    - Here we have tree separate values
      - 0x0303A527 - size 3, type 3, A527
      - 0x03084252 - size 3, type 8, data 4252
-     - 0x03084252 - size 
+     - 08FF281E1401558536 - size 8, type FF, data 281E1401558536
    - 0x27A5 Service UUID: pressure (pound-force per square inch)
    - 0x4252 Name: BR
    - 0x1E28 Manufacturer ID: 0x1E Battery voltage (3.0V), 0x28 Status byte (0b00101000)
