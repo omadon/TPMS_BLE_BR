@@ -60,7 +60,7 @@ Once pressurized they transmit when pressure changes and any couple of minutes. 
 Example:
  - RAW DATA: 0x0303A527030842520308425208FF281E1401558536
    - Information is encoded in length/type/data structure
-   - Here we have tree separate values
+   - Here we have three separate values:
      - 0x0303A527 - size 3, type 3, A527
      - 0x03084252 - size 3, type 8, data 4252
      - 08FF281E1401558536 - size 8, type FF, data 281E1401558536
